@@ -14,33 +14,38 @@ class Employee {
     vector<int> subordinates;
 };
 
-int get_importance(vector<Employee> employees, int id) {
-  Employee head;
-
-  for (auto & employee: employees) {
-    if (employee.id == id) {
-      head = employee;
-      break;
+// BFS?
+int get_importance(vector<Employee*> employees, int id) {
+  int result = 0;
+        queue<int> q;
+        map<int, Employee*> emps_map;
+        vector<Employee*>::iterator it = employees.begin();
+        while (it != employees.end()) {
+          emps_map[(*it)->id] = (*it);
+          // if head
+          if ((*it)->id == id) {
+            result += (*it)->importance;
+            // add target subordinates of head (first hand)
+            for (auto& i : (*it)->subordinates) {
+              q.push(i);
+            }
+        }
+          it++;
+  }
+  while (!q.empty()) {
+    Employee* temp = emps_map[q.front()];
+    q.pop();
+    result += temp->importance;
+    // add next level subordinates to queue
+    for (auto& i : temp->subordinates) {
+      q.push(i);
     }
   }
-
-  int getWeight(Employee employee) {
-    if (employee->subordinates.size() === 0) {
-      return employee->importance;
-    }
-
-    int imp = employee->importance;
-    for (let i = 0; i < employee->subordinates.size(); i++) {
-      imp = imp + getWeight(employee->subordinates[i]);
-    }
-
-    return imp;
-  }
-
-  return getWeight(head);
+  return result;
 }
 
 int main() {
+  // dunno how this works :(
   Employee first = {1, 5, {2, 3}};
   Employee second = {2, 3, {}};
   Employee third = {3, 3, {}};
